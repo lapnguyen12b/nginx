@@ -37,7 +37,7 @@ $ docker run -d --name hala-db --network hala-network --network-alias pgsql-dev 
 Service:
 ```bash
 $ docker build -t hala-express .
-$ docker run -dp 3000:3000 --network hala-network hala-express
+$ docker run --name hala-express -dp 3000:3000 --network hala-network hala-express
 ```
 `$ docker run -dp 3000:3000 --network hala-network -e POSTGRES_HOST=localhost -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=halaDb hala-express`
 
