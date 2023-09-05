@@ -47,7 +47,44 @@ $ docker build -t hala-fe .
 $ docker run --name hala-fe -dp 80:8080 --network hala-network hala-fe
 ```
 ### Nginx
-`/etc/nginx/sites-enabled/my-domain`
+setup Nginx: [read more here](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04).
+setup SSL: [read more here](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04).
+`/etc/nginx/sites-enabled/my-domain.com`
+```bash
+server {
+
+    root /var/www/my-domain.com/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name my-domain.com www.my-domain.com;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/my-domain.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/my-domain.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+server {
+    if ($host = www.my-domain.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    if ($host = my-domain.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+    listen 80;
+    listen [::]:80;
+
+    server_name my-domain.com www.my-domain.com;
+    return 404; # managed by Certbot
+}
+```
+convert: `domain.com:3000` to `domain.com/api`
 ```bash
 server {
 #    listen 80;
